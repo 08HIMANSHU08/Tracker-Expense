@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <title>Expense App Login Page</title>
+  </head>
+  <body>
+    <section class="container container-sm container-md container-lg container-xl container-xxl">
+      <div class="container h-100">
+        <div class="row h-100 justify-content-center">
+          <div class="col-10 col-md-8 col-lg-6">
+            <form id="my-form" class="form-control">
+              <div class="form-group">
+                <label for="email" class="text-danger text-center">Enter Email:</label>
+                <input type="email" id="email" class="form-control" required  >
+              </div>
+              <div class="form-group">
+                <label for="passward" class="text-danger text-center">Enter Passward:</label>
+                <input type="password" id="passward" class="form-control" required>
+              </div>
+              <div class="d-flex justify-content-center m-2">
+                <input class="btn btn-success btn-sm btn-outline-dark" type="submit" value="Login">
+              </div>
+              <div class="d-flex justify-content-center m-2">
+                <a href="./form.html">ForgetPassward</a>
+              </div>
+              <div class="d-flex justify-content-center m-2">
+                <a href="./signup.html">New User</a>
+                <a href="./login.html">Existing User</a>
+              </div>  
+          </form>
+          </div>
+        </div>
+      </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+      <script src="login.js"></script>
+  </body>
+</html>
