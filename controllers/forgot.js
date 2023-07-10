@@ -13,10 +13,12 @@ const tranEmailApi = new Sib.TransactionalEmailsApi();
    
     exports.postForgetPassword = async(req,res,next)=>{
         try{
+           
             const email = req.body.email;
-            const users = await SignUp.findAll({where:{email}});
-            console.log(users[0].email==email)
-            if(users[0].email==email){
+            
+            const users = await SignUp.findOne({email});
+            
+            if(users.email==email){
                 const sender = {
                     email:process.env.EMAIL
                 }
@@ -31,8 +33,8 @@ const tranEmailApi = new Sib.TransactionalEmailsApi();
                         subject:'Reset Your Passward',
                         TextContent: `http://localhost:3000/password/resetpassword/${uuid}`
                     })
-                    
-                await ForgotPassward.create({id:uuid,isactive:true,signupId:users[0].id});
+                const newforgotpassword = new ForgotPassward({_id:uuid,isactive:true,signupId:users._id});
+                newforgotpassword.save();
                 return res.status(200).json({message:"Clear",success:true});
             }
         }catch(err){

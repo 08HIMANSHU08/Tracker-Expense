@@ -6,9 +6,10 @@ const bcrypt = require('bcrypt');
 exports.getResetpassward = async(req,res,next)=>{
     try{
         const uuid = req.params.uuid;
-        const user= await ForgotPassward.findByPk(uuid);
-        if(user.id==uuid &&user.isactive==true){
-            await ForgotPassward.update({isactive: false},{where:{id:uuid}});
+        const user= await ForgotPassward.findById(uuid);
+        
+        if(user._id==uuid &&user.isactive==true){
+            await ForgotPassward.findByIdAndUpdate({_id:uuid},{isactive: false});
                 res.status(200).send(`<html>
                                             <script>
                                                 function formsubmitted(e){
@@ -35,14 +36,16 @@ exports.getResetpassward = async(req,res,next)=>{
 exports.updatePassward = async(req, res,next) => {
 
         try {
+            
             const { newpassword } = req.query;
             const { resetpasswordid } = req.params;
-            const forgot = await ForgotPassward.findByPk(resetpasswordid);
-            const signup = await SignUp.findByPk(forgot.signupId)
+            const forgot = await ForgotPassward.findById(resetpasswordid);
+            const signup = await SignUp.findById(forgot.signupId)
             if(signup){
+                
             const saltRounds = 10;
                 bcrypt.hash(newpassword, saltRounds, async function(err, hash){
-                await SignUp.update({ passward: hash },{where:{id:signup.id}})
+                await SignUp.findByIdAndUpdate({_id:signup._id},{ password: hash })
                     res.status(201).json({message: 'Successfuly update the new password'})
                 })
             } 

@@ -11,29 +11,27 @@ function isStringEmpty(str){
 }
 
 exports.postSignup = async(req,res,next)=>{
-    const t = await sequelize.transaction();
     try{
         const name = req.body.name;
         const email = req.body.email;
-        const passward = req.body.passward;
-        const users = await SignUp.findAll();
+        const password = req.body.passward;
+        const users = await SignUp.find();
         for(let i=0;i<users.length;i++){
             if(users[i].email==email){
                 return res.status(400).json({message:"User Already Exist!",success:false});
             }
         }
-        if(isStringEmpty(name)||isStringEmpty(email)||isStringEmpty(passward)){
+        if(isStringEmpty(name)||isStringEmpty(email)||isStringEmpty(password)){
             return res.status(400).json({message:"All Fields Are Mandatory",success:false});
         }
         const saltrounds=10;
-        bcrypt.hash(passward,saltrounds,async(err,hash)=>{
-            await SignUp.create({name:name,email:email,passward:hash},{transaction:t});
-            await t.commit();
+        bcrypt.hash(password,saltrounds,async(err,hash)=>{
+            const newUser = new SignUp({name:name,email,email,password:hash});
+            newUser.save();
             res.status(201).json({message:"Successfully created New User",success:true});
         })
         
     }catch(err){
-        await t.rollback();
         console.log(err);
         res.status(500).json({message:err,success:false})
     }

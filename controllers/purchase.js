@@ -1,11 +1,11 @@
 
 const RazorPay = require('razorpay');
+const SignUp = require('../models/signup')
 const Order = require('../models/order');
 const jwt = require('jsonwebtoken');
-const sequelize = require('../util/database');
+
 
 function generateAccessToken(id,name,ispremiumuser){
-    console.log("purchase",id,name,ispremiumuser)
     return jwt.sign({signupId:id,name:name,ispremiumuser},process.env.TOKEN_SECRET);
 }
 
@@ -16,11 +16,12 @@ exports.getPurchase = async(req,res,next)=>{
             key_secret:process.env.RAZORPAY_KEY_SECRET,
         })
         const amount = 25000;
-        raz.orders.create({amount,currency:'INR'},(err,order)=>{
+        raz.orders.create({amount,currency:'INR'},(err,norder)=>{
             if(err){
                 throw new Error(JSON.stringify(err));
             }
-            Order.create({orderid:order.id,status:"PENDING",signupId:req.signup.id})
+            const order = new Order({paymentid:"PENDING",orderid:norder.id,status:"PENDING",signupId:req.signup._id})
+            order.save()
             .then(()=>{
                 return res.status(201).json({order,key_id:raz.key_id});
             })
@@ -33,26 +34,16 @@ exports.getPurchase = async(req,res,next)=>{
 }
 
 exports.postPurchase = async(req,res,next)=>{
-    const t = await sequelize.transaction();
     try{
         const signupid = req.signup.id;
-        const {payment_id,order_id}=req.body;
-        const order=await Order.findOne({where:{orderid:order_id}});
-        const promise1 = order.update({paymentid:payment_id,status:"SUCCESSFULL",signupId:req.signup.id});
-        const promise2 = req.signup.update({ispremiumuser:true})
-        Promise.all([promise1,promise2])
-        .then(()=>{
+     
+        const {payment_id,order_id,id}=req.body;
+        await Order.findByIdAndUpdate({_id:id},{paymentid:payment_id,orderid:order_id,status:"SUCCESSFULL",signupId:req.signup._id});
+        await SignUp.findByIdAndUpdate({_id:req.signup._id},{isPremium:true})
             return res.status(202).json({success:true,message:"Transaction Successful",token:generateAccessToken(signupid,undefined,true)});
-        })
-        .catch((err)=>{
-            console.log(err);
-            return res.status(403).json({success:false,message:"transaction failed"});
-        })
-        await t.commit();
     }
     catch(err){
-        await t.rollback();
         console.log(err);
-        res.status(403).json({success:false,message:"Something Went Wrong"});
+        res.status(403).json({success:false,message:"transaction failed"});
     }
 }
