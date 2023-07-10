@@ -1,17 +1,18 @@
 
-const Sequelize = require('sequelize');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const sequelize = require('../util/database');
+const urlSchema = new Schema({
 
-const URL = sequelize.define('url',{
-    id:{
-        type:Sequelize.INTEGER,
-        autoIncrement:true,
-        allowNull:false,
-        primaryKey:true,
-    },
-    url:Sequelize.STRING,
+    url:{
+    type:String,
+    required:true
+   },
+   signupId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+   }
 });
 
-
-module.exports = URL;
+module.exports = mongoose.model('Url',urlSchema);
